@@ -1,0 +1,19 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1> This is the about page</h1>
+            <p> Template data : {{index .StringMap "test"}}</p>
+            <p>
+                {{if ne (index .StringMap "ipAddress") ""}}
+                    Your IP Address is {{index .StringMap "ipAddress"}}
+                {{else}}
+                    IP Address unknown. Please go to <a href="/">Home Page</a>
+                {{end}}
+            </p>
+        </div>
+    </div>
+</div>
+{{end}}
