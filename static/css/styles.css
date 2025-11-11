@@ -1,0 +1,14 @@
+.my-footer {
+    height: 3em;
+    background-color: grey;
+    margin-top: 1em;
+    padding: 1em;
+}
+
+.image-style {
+    max-width: 50%;
+}
+
+.notie-container {
+    box-shadow: none;
+}
