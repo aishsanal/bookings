@@ -27,6 +27,36 @@ func About(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "about.page.tmpl", &tempData)
 }
 
+func Thumpa(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+	renderTemplate(w, "thumpa.tmpl", &models.TemplateData{})
+}
+
+func Mulla(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+	renderTemplate(w, "mulla.tmpl", &models.TemplateData{})
+}
+
+func Reservation(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+	renderTemplate(w, "make.reservation.tmpl", &models.TemplateData{})
+}
+
+func Availability(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+	renderTemplate(w, "availability.tmpl", &models.TemplateData{})
+}
+
+func Contact(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+	renderTemplate(w, "contact.tmpl", &models.TemplateData{})
+}
+
 var appConfig config.AppConfig
 
 func renderTemplate(w http.ResponseWriter, t string, templateData *models.TemplateData) {
@@ -67,7 +97,7 @@ func CreateRepository(cnf config.AppConfig) *Repository {
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 
-	pagesPath, err := filepath.Glob("../../templates/*.page.tmpl")
+	pagesPath, err := filepath.Glob("./templates/*.tmpl")
 	if err != nil {
 		return cache, err
 	}
@@ -79,7 +109,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return cache, err
 		}
 
-		layoutPath, err := filepath.Glob("../../templates/*.layout.tmpl")
+		layoutPath, err := filepath.Glob("./templates/*.layout.tmpl")
 		if err != nil {
 			return cache, err
 		}
@@ -128,4 +158,3 @@ func loadTemplateOld(t string) (*template.Template, error) {
 	tmpl, err := template.ParseFiles(templatesToLoad...)
 	return tmpl, err
 }
-
