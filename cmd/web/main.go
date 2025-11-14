@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aishsanal/bookings/pkg/handlers"
 	"github.com/aishsanal/bookings/pkg/config"
+	"github.com/aishsanal/bookings/pkg/handlers"
 	"github.com/alexedwards/scs/v2"
 )
 

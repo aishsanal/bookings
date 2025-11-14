@@ -1,0 +1,52 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="mt-5">Make Reservation</h1>
+            <form action="/make-reservation" method="GET" class="needs-validation" novalidate>
+                <div class="form-group mt-2">
+                    <label for="firstName" name="firstName" class="form-label">First Name</label>
+                    <input required type="text" class="form-control" id="firstName">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="lastName" name="lastName" class="form-label">Last Name</label>
+                    <input required type="text" class="form-control" id="lastName">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="emailId" name="emailId" class="form-label">Email</label>
+                    <input required type="email" class="form-control" id="emailId">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="phoneNo" name="phoneNo" class="form-label">Phone No</label>
+                    <input required type="text" class="form-control" id="phoneNo">
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Make Reservation</button>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "js"}}
+<script>
+    //JavaScript for disabling form submissions if there are invalid fields
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+        }, false)
+    })
+</script>
+{{end}}
