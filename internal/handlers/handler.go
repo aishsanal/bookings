@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/aishsanal/bookings/pkg/config"
-	"github.com/aishsanal/bookings/pkg/models"
+	"github.com/aishsanal/bookings/internal/config"
+	forms "github.com/aishsanal/bookings/internal/forms"
+	"github.com/aishsanal/bookings/internal/models"
 	"github.com/justinas/nosurf"
 )
 
@@ -44,7 +45,36 @@ func Mulla(w http.ResponseWriter, r *http.Request) {
 func Reservation(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, r, "make.reservation.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "make.reservation.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
+
+func PostReservation(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("firstName"),
+		LastName:  r.Form.Get("lastName"),
+		Phone:     r.Form.Get("phone"),
+		Email:     r.Form.Get("email"),
+	}
+
+	form := forms.New(r.PostForm)
+	form.Has("firstName", r)
+
+	if !form.Valid() {
+		data := make(map[string]any)
+		data["reservation"] = reservation
+		renderTemplate(w, r, "make.reservation.tmpl", &models.TemplateData{
+			Data: data,
+			Form: form,
+		})
+	}
 }
 
 func Availability(w http.ResponseWriter, r *http.Request) {
