@@ -48,6 +48,21 @@
             `;
         attention.custom({
             msg: html,
+            willOpen: () => {
+                const elem = document.getElementById('reservation-date');
+                const rangepicker = new DateRangePicker(elem, {
+                    // ...options
+                });
+            },
+            didOpen: () => {
+                document.getElementById("start").removeAttribute("disabled")
+                document.getElementById("end").removeAttribute("disabled")
+            },
+            callback: function (result) {
+                fetch('/check-availability-json')
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+            }
         });
     })
 </script>

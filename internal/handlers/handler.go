@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,12 +10,13 @@ import (
 
 	"github.com/aishsanal/bookings/pkg/config"
 	"github.com/aishsanal/bookings/pkg/models"
+	"github.com/justinas/nosurf"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "home.page.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 func About(w http.ResponseWriter, r *http.Request) {
@@ -24,42 +26,75 @@ func About(w http.ResponseWriter, r *http.Request) {
 	tempData := models.TemplateData{
 		StringMap: stringMap,
 	}
-	renderTemplate(w, "about.page.tmpl", &tempData)
+	renderTemplate(w, r, "about.page.tmpl", &tempData)
 }
 
 func Thumpa(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "thumpa.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "thumpa.tmpl", &models.TemplateData{})
 }
 
 func Mulla(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "mulla.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "mulla.tmpl", &models.TemplateData{})
 }
 
 func Reservation(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "make.reservation.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "make.reservation.tmpl", &models.TemplateData{})
 }
 
 func Availability(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "availability.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "availability.tmpl", &models.TemplateData{})
+}
+
+func PostAvailability(w http.ResponseWriter, r *http.Request) {
+	ipAddress := r.RemoteAddr
+	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
+
+	start := r.Form.Get("start")
+	end := r.Form.Get("end")
+
+	w.Write([]byte(fmt.Sprintf("start date is %s and end date is %s", start, end)))
+}
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+func JSONPostAvailability(w http.ResponseWriter, r *http.Request) {
+	responseMsg := jsonResponse{
+		OK:      true,
+		Message: "Rooms are available",
+	}
+
+	jsonResp, err := json.MarshalIndent(responseMsg, "", "    ")
+	if err != nil {
+		log.Println(err)
+	}
+	w.Header().Set("content-type", "application/json")
+	w.Write(jsonResp)
 }
 
 func Contact(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.RemoteAddr
 	appConfig.Session.Put(r.Context(), "ipAddress", ipAddress)
-	renderTemplate(w, "contact.tmpl", &models.TemplateData{})
+	renderTemplate(w, r, "contact.tmpl", &models.TemplateData{})
+}
+
+func getCSRFToken(r *http.Request) string {
+	return nosurf.Token(r)
 }
 
 var appConfig config.AppConfig
 
-func renderTemplate(w http.ResponseWriter, t string, templateData *models.TemplateData) {
+func renderTemplate(w http.ResponseWriter, r *http.Request, t string, templateData *models.TemplateData) {
 	var template *template.Template
 	if appConfig.UseCache {
 		template = appConfig.TemplateCache[t]
@@ -68,6 +103,8 @@ func renderTemplate(w http.ResponseWriter, t string, templateData *models.Templa
 		template = cache[t]
 	}
 
+	csrfToken := getCSRFToken(r)
+	templateData.CSRFToken = csrfToken
 	err := template.Execute(w, templateData)
 	if err != nil {
 		log.Fatal(err)

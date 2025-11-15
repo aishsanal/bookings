@@ -41,6 +41,7 @@ func main() {
 	handlers.SetRepository(&repository)
 
 	fmt.Printf("Starting application on port %s", portNumber)
+	fmt.Println(ts)
 
 	srv := &http.Server{
 		Addr:    portNumber,

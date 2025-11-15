@@ -81,6 +81,7 @@
         let attention = Prompt();
 
 
+
         function notify(msg, msgType) {
             notie.alert({
                 type: msgType,
@@ -93,31 +94,33 @@
                 const {
                     msg = ""
                 } = c;
-                const { value: formValues } = await Swal.fire({
+                const { value: result } = await Swal.fire({
                     title: "Choose your dates",
                     html: msg,
                     showCancelButton: true,
                     backdrop: false,
                     focusConfirm: false,
                     willOpen: () => {
-                        const elem = document.getElementById('reservation-date');
-                        const rangepicker = new DateRangePicker(elem, {
-                            // ...options
-                        });
+                        if (c.willOpen !== undefined) {
+                            c.willOpen();
+                        }
                     },
                     didOpen: () => {
-                        document.getElementById("start").removeAttribute("disabled")
-                        document.getElementById("end").removeAttribute("disabled")
-                    },
-                    preConfirm: () => {
-                        return [
-                            document.getElementById("start").value,
-                            document.getElementById("end").value
-                        ];
+                        if (c.didOpen !== undefined) {
+                            c.didOpen();
+                        }
                     }
-                });
-                if (formValues) {
-                    Swal.fire(JSON.stringify(formValues));
+                })
+                if (result.dismiss !== Swal.DismissReason.cancel) {
+                    if (result.value !== "") {
+                        if (c.callback !== undefined) {
+                            c.callback(result)
+                        } else {
+                            c.callback(false)
+                        }
+                    } else {
+                        c.callback(false)
+                    }
                 }
             }
 
